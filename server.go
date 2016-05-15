@@ -6,6 +6,13 @@ import (
 	"net/http"
 )
 
+func main() {
+	http.HandleFunc("/view/", viewHandler)
+	http.HandleFunc("/edit/", editHandler)
+	//http.HandleFunc("/save/", saveHandler)
+	http.ListenAndServe(":8080", nil)
+}
+
 type Page struct {
 	Title string
 	Body  []byte
@@ -31,13 +38,6 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "view", p)
 }
 
-func main() {
-	http.HandleFunc("/view/", viewHandler)
-	http.HandleFunc("/edit/", editHandler)
-	http.HandleFunc("/save/", saveHandler)
-	http.ListenAndServe(":8080", nil)
-}
-
 func editHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/edit/"):]
 	p, err := loadPage(title)
@@ -48,6 +48,6 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-	t, _ := template.ParseFile(tmpl + ".html")
+	t, _ := template.ParseFiles(tmpl + ".html")
 	t.Execute(w, p)
 }
